@@ -1,11 +1,10 @@
 import boto3
 
-def create_movie_table(dynamodb=None):
-  if not dynamodb:
-    dynamodb = boto3.resource('dynamodb')
+def create_movie_table(tableName):
+  dynamodb = boto3.resource('dynamodb')
 
   table = dynamodb.create_table(
-      TableName='Movies',
+      TableName=tableName,
       KeySchema=[
         {
           'AttributeName': 'year',
@@ -32,4 +31,7 @@ def create_movie_table(dynamodb=None):
         'WriteCapacityUnits': 10
       }
   )
+
+  table.wait_until_exists()
+
   return table
