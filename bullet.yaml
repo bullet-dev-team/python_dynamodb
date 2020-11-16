@@ -3,7 +3,7 @@ runtime: python3
 build:
   commands:
     build:
-      - pip install requirements.txt
+      - pip install -r requirements.txt
   env:
     - name: FOO
       value: "bar"
