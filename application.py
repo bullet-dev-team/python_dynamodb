@@ -1,4 +1,4 @@
-from .MovieTable import create_movie_table
+from package.MovieTable import create_movie_table
 import os
 import json
 
