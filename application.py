@@ -28,9 +28,13 @@ def application(environ, start_response):
       KeyConditionExpression=Key('year').eq(2020)
   )
 
+  s3 = boto3.resource('s3')
+  bucket_list = [bucket.name for bucket in s3.buckets.all()]
+
   response = {
     'tableStatus': table.table_status,
-    'movie': str(item['Items'][0])
+    'movie': str(item['Items'][0]),
+    'buckets': bucket_list
   }
 
   start_response("200 OK", [
