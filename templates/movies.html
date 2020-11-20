@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>First Flask App</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+</head>
+<script>
+  function myFunction() {
+    $.ajax({
+      url: "/list",
+      type: "POST"
+    }).done(function(response) {
+      var html = "<br><br><br><p> <b> Movie List : <b><p>";
+      response =response.result;
+      $.each(response,function(key,val){
+        console.log(val);
+        html +="<p>"+val+"<p>"
+      });
+      html +="<br>";
+      $(".show-data").empty().append(html);
+    });
+  };
+</script>
+<body>
+<p>
+  <button id="clicked" onclick="myFunction()">List Movies</button>
+</p>
+<div class="show-data" >
+</div>
+</body>
+</html>
