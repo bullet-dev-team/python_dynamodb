@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>First Flask App</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+</head>
+<script>
+  function myFunction() {
+    var movie= $('#movie').val();
+    $.ajax({
+      url: "/add",
+      type: "POST",
+      data: {movie:movie}
+    }).done(function(response) {
+      {#var html= "<br><br><br><p> <b> Movie List : <b><p>";#}
+      response =response.result;
+      $.each(response,function(key,val){
+        console.log(val);
+        {#html+="<p>"+val+"<p>"#}
+      });
+      {#html +="<br>";#}
+      {#$(".show-data").append(html);#}
+    });
+  };
+</script>
+<body>
+<p>
+  Add your favourite movies!<br><br>
+  Movie Name <input type="text" id="movie" name="movie"><br><br>
+  <button id="clicked" onclick="myFunction()">Submit</button>
+</p>
+<div class="show-data" >
+</div>
+</body>
+</html>

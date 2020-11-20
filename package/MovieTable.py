@@ -35,3 +35,17 @@ def create_movie_table(tableName):
   table.wait_until_exists()
 
   return table
+
+def put_item(table_name, item_name):
+  dynamodb = boto3.resource('dynamodb')
+  table = dynamodb.Table(table_name)
+  table.put_item(
+      Item={
+        'year': 2020,
+        'title': item_name,
+        'info': {
+          'plot': 'charpter 1',
+          'rating': 10
+        }
+      }
+  )

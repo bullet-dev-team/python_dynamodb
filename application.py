@@ -1,44 +1,46 @@
-from package.MovieTable import create_movie_table
-import json
+from package.MovieTable import create_movie_table, put_item
 import boto3
 from boto3.dynamodb.conditions import Key
+from flask import Flask, request, render_template,jsonify
 
+application = Flask(__name__)
 
-def application(environ, start_response):
+@application.route('/')
+def home():
+  return render_template('home.html')
+
+@application.route('/add', methods=['GET','POST'])
+def add_movie():
   client = boto3.client('dynamodb')
-  dynamodb = boto3.resource('dynamodb')
-  tableName = 'Movies'
-  table = dynamodb.Table(tableName)
+
+  # crate table if not exists
+  table_name = 'Movies'
   existing_tables = client.list_tables()['TableNames']
-  if tableName not in existing_tables:
-    table = create_movie_table(tableName)
+  if table_name not in existing_tables:
+    create_movie_table(table_name)
+  movie = request.form['movie']
 
-  table.put_item(
-      Item={
-        'year': 2020,
-        'title': 'new Movie',
-        'info': {
-          'plot': 'charpter 1',
-          'rating': 10
-        }
-      }
-  )
+  # put movie record
+  put_item(table_name, movie)
+  return 'succeed'
 
+@application.route('/list_movies', methods=['GET'])
+def list_movies():
+  return render_template('movies.html')
+
+@application.route('/list', methods=['GET','POST'])
+def query():
+  dynamodb = boto3.resource('dynamodb')
+  table_name = 'Movies'
+  table = dynamodb.Table(table_name)
   item = table.query(
       KeyConditionExpression=Key('year').eq(2020)
   )
-
-  s3 = boto3.resource('s3')
-  bucket_list = [bucket.name for bucket in s3.buckets.all()]
-
-  response = {
-    'tableStatus': table.table_status,
-    'movie': str(item['Items'][0]),
-    'buckets': bucket_list
+  result = {
+    "result": str(item['Items'])
   }
+  result = {str(key): value for key, value in result.items()}
+  return jsonify(result=result)
 
-  start_response("200 OK", [
-    ("Content-Type", "application/json")
-  ])
-
-  return [json.dumps(response).encode('utf-8')]
+if __name__ == '__main__':
+  application.run(debug=True)
